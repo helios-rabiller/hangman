@@ -53,4 +53,28 @@ def draw_hangman(screen, mistakes):
     pygame.quit()
 
 draw_hangman()
-# not functionnal yet
+def load_animation_frames(path, file_format="png"):
+    frames = []
+    for frame_file in sorted(os.listdir(path), key=lambda x: int(x.split('_')[-1].split('.')[0])):
+        if frame_file.endswith(file_format):
+            frame_path = os.path.join(path, frame_file)
+            frames.append(pygame.image.load(frame_path).convert_alpha())
+    return frames
+
+
+
+animation_frames = load_animation_frames("animations/")
+animation_index = 0
+animation_speed = 9
+
+while running:
+    screen.fill(white)
+    
+    # Draw hangman figure
+    draw_hangman(screen, mistakes)
+    animation_index += 1
+    if animation_index >= len(animation_frames) * animation_speed:
+        animation_index = 0
+    current_frame = animation_frames[animation_index // animation_speed]
+    screen.blit(current_frame, (400, 200))
+    
