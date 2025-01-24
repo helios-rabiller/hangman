@@ -1,4 +1,5 @@
-# Version en Français #
+# V2 en français
+
 import pygame
 import random
 import os
@@ -21,7 +22,7 @@ def choisir_mot(mots):
     return random.choice(mots)
 
 def afficher_mot(mot, lettres_trouvees):
-    # Affiche le mot avec des '_' pour les lettres non trouvées.#
+    # Affiche le mot avec des '_' pour les lettres non trouvées. #
     return ' '.join([lettre if lettre in lettres_trouvees else '_' for lettre in mot])
 
 def jeu_pendu():
@@ -45,9 +46,30 @@ def jeu_pendu():
     mots = lire_mots(fichier_mots)
 
     def afficher_texte(texte, x, y):
-        # Affiche un texte sur l'écran avec la police personnalisée.#
+        # Affiche un texte sur l'écran avec la police personnalisée. #
         rendu = police_personnalisee.render(texte, True, texte_couleur)
         ecran.blit(rendu, (x, y))
+
+    def afficher_texte_multiligne(texte, x, y, largeur_max, espacement=10):
+        # Affiche un texte en plusieurs lignes si nécessaire.#
+        lignes = []
+        mots = texte.split(' ')
+        ligne_actuelle = ""
+
+        for mot in mots:
+            test_ligne = f"{ligne_actuelle} {mot}".strip()
+            if police_personnalisee.size(test_ligne)[0] <= largeur_max:
+                ligne_actuelle = test_ligne
+            else:
+                lignes.append(ligne_actuelle)
+                ligne_actuelle = mot
+
+        if ligne_actuelle:
+            lignes.append(ligne_actuelle)
+
+        for i, ligne in enumerate(lignes):
+            rendu = police_personnalisee.render(ligne, True, texte_couleur)
+            ecran.blit(rendu, (x, y + i * (police_taille + espacement)))
 
     def jouer():
         mot = choisir_mot(mots)
@@ -58,7 +80,7 @@ def jeu_pendu():
 
         while not jeu_termine:
             ecran.fill(fond_couleur)
-            
+
             # Affichage du pendu
             image_pendu = pygame.image.load(images_pendu[erreurs])
             ecran.blit(image_pendu, (50, 50))
@@ -74,6 +96,7 @@ def jeu_pendu():
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    pygame.quit()
                     return "quitter"
 
                 if event.type == pygame.KEYDOWN:
@@ -94,9 +117,11 @@ def jeu_pendu():
         # Résultat
         ecran.fill(fond_couleur)
         if erreurs == len(images_pendu) - 1:
-            afficher_texte(f"Perdu ! Le mot était : {mot}", 200, 300)
+            message = f"Perdu ! Le mot était : {mot}"
         else:
-            afficher_texte("Félicitations ! Vous avez gagné !", 200, 300)
+            message = "Félicitations ! Vous avez gagné !"
+
+        afficher_texte_multiligne(message, 100, 250, largeur_max=600, espacement=10)
         pygame.display.flip()
         pygame.time.wait(3000)
 
@@ -150,6 +175,172 @@ def jeu_pendu():
 
 if __name__ == "__main__":
     jeu_pendu()
+
+
+# # Version en Français #
+# import pygame
+# import random
+# import os
+
+# def lire_mots(fichier):
+#     # Lit les mots du fichier et retourne une liste.#
+#     if not os.path.exists(fichier):
+#         with open(fichier, 'w') as f:
+#             f.write("pomme\nbanane\ncerise\norange\nmangue\nraisin\npoire\nfraise\nprune\nkiwi\ncitron\ngoyave\npapaye\nfigue\nananas\n")
+#     with open(fichier, 'r') as f:
+#         return [ligne.strip() for ligne in f.readlines()]
+
+# def ajouter_mot(fichier, mot):
+#     # Ajoute un mot dans le fichier.#
+#     with open(fichier, 'a') as f:
+#         f.write(mot + "\n")
+
+# def choisir_mot(mots):
+#     # Choisit un mot au hasard dans la liste.#
+#     return random.choice(mots)
+
+# def afficher_mot(mot, lettres_trouvees):
+#     # Affiche le mot avec des '_' pour les lettres non trouvées.#
+#     return ' '.join([lettre if lettre in lettres_trouvees else '_' for lettre in mot])
+
+# def jeu_pendu():
+#     pygame.init()
+
+#     # Paramètres
+#     largeur, hauteur = 800, 600
+#     fond_couleur = (255, 255, 255)
+#     texte_couleur = (0, 0, 0)
+#     police_taille = 48
+#     fichier_mots = "mots.txt"
+#     images_pendu = [f"etape_{i}.png" for i in range(7)]
+
+#     # Charger la police personnalisée
+#     police_personnalisee = pygame.font.Font("PlaywriteVN-VariableFont_wght.ttf", police_taille)
+
+#     # Initialisation
+#     ecran = pygame.display.set_mode((largeur, hauteur))
+#     pygame.display.set_caption("Jeu du Pendu")
+
+#     mots = lire_mots(fichier_mots)
+
+#     def afficher_texte(texte, x, y):
+#         # Affiche un texte sur l'écran avec la police personnalisée.#
+#         rendu = police_personnalisee.render(texte, True, texte_couleur)
+#         ecran.blit(rendu, (x, y))
+
+#     def jouer():
+#         mot = choisir_mot(mots)
+#         lettres_trouvees = set()
+#         lettres_ratees = set()
+#         erreurs = 0
+#         jeu_termine = False
+
+#         while not jeu_termine:
+#             ecran.fill(fond_couleur)
+            
+#             # Affichage du pendu
+#             image_pendu = pygame.image.load(images_pendu[erreurs])
+#             ecran.blit(image_pendu, (50, 50))
+
+#             # Affichage du mot
+#             mot_affiche = afficher_mot(mot, lettres_trouvees)
+#             afficher_texte(mot_affiche, 200, 400)
+
+#             # Affichage des lettres ratées
+#             afficher_texte("Ratées : " + ' '.join(sorted(lettres_ratees)), 200, 500)
+
+#             pygame.display.flip()
+
+#             for event in pygame.event.get():
+#                 if event.type == pygame.QUIT:
+#                     return "quitter"
+
+#                 if event.type == pygame.KEYDOWN:
+#                     lettre = event.unicode.lower()
+#                     if lettre.isalpha() and lettre not in lettres_trouvees | lettres_ratees:
+#                         if lettre in mot:
+#                             lettres_trouvees.add(lettre)
+#                         else:
+#                             lettres_ratees.add(lettre)
+#                             erreurs += 1
+
+#                         if erreurs == len(images_pendu) - 1:
+#                             jeu_termine = True
+
+#                         if set(mot) <= lettres_trouvees:
+#                             jeu_termine = True
+
+#         # Résultat
+#         # ecran.fill(fond_couleur)
+#         # if erreurs == len(images_pendu) - 1:
+#         #     afficher_texte(f"Perdu ! Le mot était : {mot}", 200, 300)
+#         # else:
+#         #     afficher_texte("Félicitations ! Vous avez gagné !", 200, 300)
+#         # pygame.display.flip()
+#         # pygame.time.wait(3000)
+#         ecran.fill(fond_couleur)
+#         if erreurs == len(images_pendu) - 1:
+#             message = f"Perdu ! Le mot était : {mot}"
+#         else:
+#             message = "Félicitations ! Vous avez gagné !"
+
+#         # Afficher le message avec une largeur maximale de 600 pixels
+#         afficher_texte_multiligne(message, 100, 250, largeur_max=600, espacement=10)
+
+#         pygame.display.flip()
+#         pygame.time.wait(3000)
+
+
+#     def menu():
+#         while True:
+#             ecran.fill(fond_couleur)
+#             afficher_texte("1. Jouer", 200, 200)
+#             afficher_texte("2. Ajouter un mot", 200, 300)
+#             afficher_texte("3. Quitter", 200, 400)
+#             pygame.display.flip()
+
+#             for event in pygame.event.get():
+#                 if event.type == pygame.QUIT:
+#                     pygame.quit()
+#                     return
+
+#                 if event.type == pygame.KEYDOWN:
+#                     if event.key == pygame.K_1:
+#                         result = jouer()
+#                         if result == "quitter":
+#                             return
+#                     elif event.key == pygame.K_2:
+#                         ajouter_un_mot()
+#                     elif event.key == pygame.K_3:
+#                         pygame.quit()
+#                         return
+
+#     def ajouter_un_mot():
+#         mot = ""
+#         while True:
+#             ecran.fill(fond_couleur)
+#             afficher_texte("Entrez un mot (appuyez sur Entrée pour valider):", 50, 200)
+#             afficher_texte(mot, 50, 300)
+#             pygame.display.flip()
+
+#             for event in pygame.event.get():
+#                 if event.type == pygame.QUIT:
+#                     pygame.quit()
+#                     return
+
+#                 if event.type == pygame.KEYDOWN:
+#                     if event.key == pygame.K_RETURN and mot:
+#                         ajouter_mot(fichier_mots, mot)
+#                         return
+#                     elif event.key == pygame.K_BACKSPACE:
+#                         mot = mot[:-1]
+#                     elif event.unicode.isalpha():
+#                         mot += event.unicode.lower()
+
+#     menu()
+
+# if __name__ == "__main__":
+#     jeu_pendu()
 
 # Version en Anglais #
 

@@ -211,3 +211,4 @@ rhinoceros
 hippopotame
 giraffe
 canape
+encore
