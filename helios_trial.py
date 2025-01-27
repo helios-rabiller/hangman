@@ -78,6 +78,8 @@ def main_menu():
     menu_running = True
     while menu_running:
         screen.fill(white)
+        play_rect = pygame.Rect(width // 2 - 100, height // 2 - 40, 200, 50)
+        quit_rect = pygame.Rect(width // 2 - 100, height // 2 + 60, 200, 50)
 
         # Title
         title_surface = font.render("Hangman Game", True, black)
@@ -122,7 +124,7 @@ def main_game():
     max_mistakes = 6
     running = True
 
-    animation_frames = load_animation_frames("animations/")
+    animation_frames = load_animation_frames("animations/stick_waving/")
     animation_index = 0
     animation_speed = 9
     
@@ -156,7 +158,22 @@ def main_game():
             win_surface = font.render("You win!", True, red)
             screen.blit(win_surface, (550, 100))
             pygame.display.flip()
-            pygame.time.wait(3000)
+            animation_frames = load_animation_frames("animations/stick_victory/")
+            animation_speed = 1
+            number = 0
+            while number < 180:
+                for frame in animation_frames:
+                    screen.blit(current_frame, (400, 200))
+                animation_index += 1
+                if animation_index >= len(animation_frames) * animation_speed:
+                    animation_index = 0
+                current_frame = animation_frames[animation_index // animation_speed]
+                number = number + 1
+                pygame.time.wait(30)
+                pygame.display.flip()
+
+
+
             running = False
         
         # Event handling
